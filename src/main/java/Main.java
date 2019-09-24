@@ -17,13 +17,13 @@ public class Main {
         File test = new File("C:\\TEST");
         File count = new File("C:\\home\\count.txt");
 
-        if(home.exists())
+        if(!home.exists())
         home.mkdir();
 
-        if(dev.exists())
+        if(!dev.exists())
         dev.mkdir();
 
-        if(test.exists())
+        if(!test.exists())
         test.mkdir();
 
         BasicFileAttributes attrs;
