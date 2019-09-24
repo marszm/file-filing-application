@@ -21,11 +21,12 @@ public class Main {
         System.out.println(userHomeDirectory);
         String userOS = System.getProperty("os.name").toLowerCase();
         System.out.println(userOS);
+
         if(userOS.contains("windows")) {
 
             String s1 = userHomeDirectory+"\\"+HOME;
-            File file = new File(s1);
-            file.mkdir();
+            File file1 = new File(s1);
+            file1.mkdir();
             System.out.println(s1);
         }
         File file = new File(HOME);
@@ -35,15 +36,16 @@ public class Main {
             e.printStackTrace();
         }
 
+        if (userOS.contains("nix")) {
+
+            String s1 = userHomeDirectory+"/"+HOME;
+            File file2 = new File(s1);
+            file2.mkdir();
+            System.out.println(s1);
+
+        }
+
         //        jesli katalogi istnieja to niepotrzebnie je zakladamy?
-//        if(!home.exists() || !dev.exists() || !test.exists()) {
-//
-//            home.mkdir();
-//            dev.mkdir();
-//            test.mkdir();
-//
-//        }
-//
 //        BasicFileAttributes attrs;
 //
 //        int xmlCounter = 0;
