@@ -22,28 +22,25 @@ public class Main {
         String userOS = System.getProperty("os.name").toLowerCase();
         System.out.println(userOS);
 
-        if(userOS.contains("windows")) {
 
-            String s1 = userHomeDirectory+"\\"+HOME;
-            File file1 = new File(s1);
+        String home = userHomeDirectory + File.separator + HOME;
+        String dev = userHomeDirectory + File.separator + DEV;
+        String test = userHomeDirectory + File.separator + TEST;
+
+        File file1 = new File(home);
+        File file2 = new File(dev);
+        File file3 = new File(test);
+
+        if(!file1.exists() || !file2.exists() || !file3.exists()) {
             file1.mkdir();
-            System.out.println(s1);
-        }
-        File file = new File(HOME);
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (userOS.contains("nix")) {
-
-            String s1 = userHomeDirectory+"/"+HOME;
-            File file2 = new File(s1);
             file2.mkdir();
-            System.out.println(s1);
-
+            file3.mkdir();
         }
+
+        System.out.println(file1);
+        System.out.println(file2);
+        System.out.println(file3);
+
 
         //        jesli katalogi istnieja to niepotrzebnie je zakladamy?
 //        BasicFileAttributes attrs;
