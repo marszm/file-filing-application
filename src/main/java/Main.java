@@ -23,13 +23,16 @@ public class Main {
         System.out.println(userOS);
 
 
-        String home = userHomeDirectory + File.separator + HOME;
+        String home = userHomeDirectory + File.separator + HOME + File.separator;
         String dev = userHomeDirectory + File.separator + DEV;
         String test = userHomeDirectory + File.separator + TEST;
+        String count = userHomeDirectory + File.separator + HOME + File.separator + FILENAME;
 
         File file1 = new File(home);
         File file2 = new File(dev);
         File file3 = new File(test);
+        File file4 = new File(count);
+
 
         if(!file1.exists() || !file2.exists() || !file3.exists()) {
             file1.mkdir();
@@ -37,9 +40,17 @@ public class Main {
             file3.mkdir();
         }
 
+        try {
+            file4.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         System.out.println(file1);
         System.out.println(file2);
         System.out.println(file3);
+
 
 
         //        jesli katalogi istnieja to niepotrzebnie je zakladamy?
