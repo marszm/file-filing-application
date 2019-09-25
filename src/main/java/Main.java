@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
@@ -12,96 +15,95 @@ public class Main {
 
     public static void main(String[] args) {
 
-        final String FILENAME = "count.txt";
+        final String COUNTTXT = "count.txt";
         final String HOME = "HOME";
         final String DEV = "DEV";
         final String TEST = "TEST";
 
-        String userHomeDirectory = System.getProperty("user.home");
-        System.out.println(userHomeDirectory);
-        String userOS = System.getProperty("os.name").toLowerCase();
-        System.out.println(userOS);
+        final String userHomeDirectory = System.getProperty("user.home");
+
+        final String home = userHomeDirectory + File.separator + HOME;
+        final String dev = userHomeDirectory + File.separator + DEV;
+        final String test = userHomeDirectory + File.separator + TEST;
+        final String count = userHomeDirectory + File.separator + HOME + File.separator + COUNTTXT;
 
 
-        String home = userHomeDirectory + File.separator + HOME + File.separator;
-        String dev = userHomeDirectory + File.separator + DEV;
-        String test = userHomeDirectory + File.separator + TEST;
-        String count = userHomeDirectory + File.separator + HOME + File.separator + FILENAME;
-
-        File file1 = new File(home);
-        File file2 = new File(dev);
-        File file3 = new File(test);
-        File file4 = new File(count);
 
 
-        if(!file1.exists() || !file2.exists() || !file3.exists()) {
-            file1.mkdir();
-            file2.mkdir();
-            file3.mkdir();
+
+        File fileHome = new File(home);
+        File fileDev = new File(dev);
+        File fileTest = new File(test);
+        File fileCount = new File(count);
+
+        if (!fileHome.exists() || !fileDev.exists() || !fileTest.exists()) {
+
+            fileHome.mkdir();
+            fileDev.mkdir();
+            fileTest.mkdir();
+
         }
 
         try {
-            file4.createNewFile();
+            fileCount.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        BasicFileAttributes attrs;
 
-        System.out.println(file1);
-        System.out.println(file2);
-        System.out.println(file3);
+        int xmlCounter = 0;
+        int jarCounter = 0;
 
-
-
-        //        jesli katalogi istnieja to niepotrzebnie je zakladamy?
-//        BasicFileAttributes attrs;
-//
-//        int xmlCounter = 0;
-//        int jarCounter = 0;
-//
 //                wszystko jest w jednym bloku try
-//        try {
-//            tworzenie pliku do odczytu liczniow
-//            count.createNewFile();
+        try {
+
+            File[] homeFilterjar = fileHome.listFiles((dir, name) -> name.endsWith(".jar"));
+            File[] homeFilterxml = fileHome.listFiles((dir, name) -> name.endsWith(".xml"));
+
+            for (File path : homeFilterjar) {
 //
-//            filtrowanie plikow z rozszerzeniami .xml albp .jar
-//            File [] homeFilterjar = home.listFiles((dir, name) -> name.endsWith(".jar"));
-//            File[] homeFilterxml = home.listFiles((dir, name) -> name.endsWith(".xml"));
-//
-//            for(File path: homeFilterjar) {
-//                jarCounter++;
+                jarCounter++;
 //                attrs = Files.readAttributes(path.toPath(), BasicFileAttributes.class);
-//                FileTime time = attrs.creationTime();
+//                FileTime fileTime  = attrs.creationTime();
+//                System.out.println(time);
 //                        uzycie stringa do parsowania godzin
-//                String hh = String.format("%1$tH",new Date(time.toMillis()));
+//                String hh = String.format("%1$tH",new Date(fileTime.toMillis()));
 //                int result = Integer.parseInt(hh); //godzina utworzenia pliku
 //
 //                jeslo godzina parzysta to do dev, jesli nie to do test
 //                if(result % 2 == 0) {
 //                            uzyles File.renameTo(), lepiej byloby uzyc Files.move()
-//                    path.renameTo(new File("C:\\DEV\\"+path.getName()));
+                    Path pathHome = Paths.get(home +  File.separator + path.getName());
+                    Path pathDev = Paths.get(dev +  File.separator + path.getName());
+                    Files.move(pathHome, pathDev,StandardCopyOption.REPLACE_EXISTING);
 //                } else {
-//                    path.renameTo(new File("C:\\TEST\\"+path.getName()));
+//                    Path pathHome = Paths.get(home +  File.separator + path.getName());
+//                    Path pathTest = Paths.get(test +  File.separator + path.getName());
+//                    Files.move(pathHome, pathTest,StandardCopyOption.REPLACE_EXISTING);
 //                }
-//            }
+            }
 //            przenosi wszystkie .xml z home do dev
-//            for(File path1: homeFilterxml) {
+            for(File path1: homeFilterxml) {
 //                xmlCounter++;
-//                path1.renameTo(new File("C:\\DEV\\"+path1.getName()));
-//            }
-//
-//            int totalCounter = xmlCounter + jarCounter;
-//
+                Path pathHome = Paths.get(home +  File.separator + path1.getName());
+                Path pathDev = Paths.get(dev +  File.separator + path1.getName());
+                Files.move(pathHome, pathDev);
+
+            }
+
+            int totalCounter = xmlCounter + jarCounter;
+
 //            zapisywanie licznikow do pliku count.txt
 //            PrintWriter printWriter = new PrintWriter(count);
 //            printWriter.println("ile plikow .xml "+xmlCounter);
 //            printWriter.println("ile plikow .jar "+jarCounter);
 //            printWriter.println("w sumie plikow "+totalCounter);
 //            printWriter.close();
-//
-//
+
+
 //                    catch bez obslugi, tylko zrzut stacktrace
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+}}
