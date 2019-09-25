@@ -27,14 +27,10 @@ public class Main {
         final String test = userHomeDirectory + File.separator + TEST;
         final String count = userHomeDirectory + File.separator + HOME + File.separator + COUNTTXT;
 
-
-
-
-
-        File fileHome = new File(home);
-        File fileDev = new File(dev);
-        File fileTest = new File(test);
-        File fileCount = new File(count);
+        final File fileHome = new File(home);
+        final File fileDev = new File(dev);
+        final File fileTest = new File(test);
+        final File fileCount = new File(count);
 
         if (!fileHome.exists() || !fileDev.exists() || !fileTest.exists()) {
 
@@ -64,28 +60,26 @@ public class Main {
             for (File path : homeFilterjar) {
 //
                 jarCounter++;
-//                attrs = Files.readAttributes(path.toPath(), BasicFileAttributes.class);
-//                FileTime fileTime  = attrs.creationTime();
-//                System.out.println(time);
-//                        uzycie stringa do parsowania godzin
-//                String hh = String.format("%1$tH",new Date(fileTime.toMillis()));
-//                int result = Integer.parseInt(hh); //godzina utworzenia pliku
-//
-//                jeslo godzina parzysta to do dev, jesli nie to do test
-//                if(result % 2 == 0) {
-//                            uzyles File.renameTo(), lepiej byloby uzyc Files.move()
+
+                attrs = Files.readAttributes(path.toPath(), BasicFileAttributes.class);
+                FileTime fileTime  = attrs.creationTime();
+                int hh = Integer.parseInt(String.format("%1$tH",new Date(fileTime.toMillis())));
+                System.out.println(hh);
+
+                if(hh % 2 == 0) {
                     Path pathHome = Paths.get(home +  File.separator + path.getName());
                     Path pathDev = Paths.get(dev +  File.separator + path.getName());
                     Files.move(pathHome, pathDev,StandardCopyOption.REPLACE_EXISTING);
-//                } else {
-//                    Path pathHome = Paths.get(home +  File.separator + path.getName());
-//                    Path pathTest = Paths.get(test +  File.separator + path.getName());
-//                    Files.move(pathHome, pathTest,StandardCopyOption.REPLACE_EXISTING);
-//                }
+                } else {
+                    Path pathHome = Paths.get(home +  File.separator + path.getName());
+                    Path pathTest = Paths.get(test +  File.separator + path.getName());
+                    Files.move(pathHome, pathTest,StandardCopyOption.REPLACE_EXISTING);
+                }
             }
-//            przenosi wszystkie .xml z home do dev
+
             for(File path1: homeFilterxml) {
-//                xmlCounter++;
+
+                xmlCounter++;
                 Path pathHome = Paths.get(home +  File.separator + path1.getName());
                 Path pathDev = Paths.get(dev +  File.separator + path1.getName());
                 Files.move(pathHome, pathDev);
@@ -95,11 +89,11 @@ public class Main {
             int totalCounter = xmlCounter + jarCounter;
 
 //            zapisywanie licznikow do pliku count.txt
-//            PrintWriter printWriter = new PrintWriter(count);
-//            printWriter.println("ile plikow .xml "+xmlCounter);
-//            printWriter.println("ile plikow .jar "+jarCounter);
-//            printWriter.println("w sumie plikow "+totalCounter);
-//            printWriter.close();
+            PrintWriter printWriter = new PrintWriter(count);
+            printWriter.println("ile plikow .xml "+xmlCounter);
+            printWriter.println("ile plikow .jar "+jarCounter);
+            printWriter.println("w sumie plikow "+totalCounter);
+            printWriter.close();
 
 
 //                    catch bez obslugi, tylko zrzut stacktrace
