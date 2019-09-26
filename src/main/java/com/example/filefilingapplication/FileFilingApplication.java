@@ -37,6 +37,9 @@ public class FileFilingApplication {
         final File fileTest = new File(test);
         final File fileCount = new File(count);
 
+        Path pathHomeWatch = Paths.get(home + File.separator);
+        Path pathDevWatch = Paths.get(dev + File.separator);
+
         WatchService watchService = FileSystems.getDefault().newWatchService();
 
         Path pathWatch = Paths.get(home);
@@ -47,9 +50,10 @@ public class FileFilingApplication {
 
         while ((key = watchService.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println(
-                        "Event kind:" + event.kind()
-                                + ". File affected: " + event.context() + ".");
+                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
+                if(event.kind().toString() == "ENTRY_CREATE") {
+                    Files.move(pathHomeWatch, pathDevWatch, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
             key.reset();
         }
