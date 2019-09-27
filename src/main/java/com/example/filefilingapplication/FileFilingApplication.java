@@ -37,8 +37,7 @@ public class FileFilingApplication {
         final File fileTest = new File(test);
         final File fileCount = new File(count);
 
-        Path pathHomeWatch = Paths.get(home + File.separator);
-        Path pathDevWatch = Paths.get(dev + File.separator);
+
 
         WatchService watchService = FileSystems.getDefault().newWatchService();
 
@@ -48,15 +47,7 @@ public class FileFilingApplication {
 
         WatchKey key;
 
-        while ((key = watchService.take()) != null) {
-            for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
-                if(event.kind().toString() == "ENTRY_CREATE") {
-                    Files.move(pathHomeWatch, pathDevWatch, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            key.reset();
-        }
+
 
         if (!fileHome.exists() || !fileDev.exists() || !fileTest.exists()) {
 
@@ -122,7 +113,6 @@ public class FileFilingApplication {
             }
         }
 
-        assert homeFilterxml != null;
         for (File path1 : homeFilterxml) {
 
             xmlCounter++;
@@ -144,6 +134,69 @@ public class FileFilingApplication {
             printWriter = new PrintWriter(count);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+
+        while ((key = watchService.take()) != null) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
+                if(event.kind().toString() == "ENTRY_CREATE") {
+
+                    File[] homeWatchFilterjar = fileHome.listFiles((dir, name) -> name.endsWith(".jar"));
+                    File[] homeWatchFilterxml = fileHome.listFiles((dir, name) -> name.endsWith(".xml"));
+                    for (File path : homeWatchFilterjar) {
+//
+                        jarCounter++;
+
+                        try {
+                            attrs = Files.readAttributes(path.toPath(), BasicFileAttributes.class);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        FileTime fileTime = attrs.creationTime();
+                        int hh = Integer.parseInt(String.format("%1$tH", new Date(fileTime.toMillis())));
+
+                        if (hh % 2 == 0) {
+
+                            Path pathDev = Paths.get(dev + File.separator + path.getName());
+                            Path pathHome = Paths.get(home + File.separator + path.getName());
+
+                            try {
+//                                Files.move(pathHomeWatch, pathDevWatch, StandardCopyOption.REPLACE_EXISTING);
+                                Files.move(pathHome, pathDev, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else {
+
+                            Path pathHome = Paths.get(home + File.separator + path.getName());
+                            Path pathTest = Paths.get(test + File.separator + path.getName());
+
+                            try {
+                                Files.move(pathHome, pathTest, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    for (File path1 : homeFilterxml) {
+
+                        xmlCounter++;
+                        Path pathHome = Paths.get(home + File.separator + path1.getName());
+                        Path pathDev = Paths.get(dev + File.separator + path1.getName());
+
+                        try {
+                            Files.move(pathHome, pathDev);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }
+            key.reset();
         }
 
         printWriter.println("ile plikow .xml " + xmlCounter);
