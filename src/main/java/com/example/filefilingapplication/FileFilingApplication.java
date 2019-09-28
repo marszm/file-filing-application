@@ -3,10 +3,7 @@ package com.example.filefilingapplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -53,6 +50,9 @@ public class FileFilingApplication {
                 e.printStackTrace();
             }
         }
+
+        BufferedWriter bufferedWriter = null;
+        FileWriter fileWriter = null;
 
         BasicFileAttributes attrs = null;
 
@@ -110,22 +110,6 @@ public class FileFilingApplication {
             }
         }
 
-//        System.out.println(totalCounter);
-        System.out.println(xmlCounter);
-        System.out.println(jarCounter);
-
-        PrintWriter printWriter = null;
-
-        try {
-            printWriter = new PrintWriter(count);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        printWriter.println("ile plikow .xml " + xmlCounter);
-        printWriter.println("ile plikow .jar " + jarCounter);
-        printWriter.close();
-
         while ((key = watchService.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
 //                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
@@ -180,19 +164,19 @@ public class FileFilingApplication {
                             }
 
                         }
+                        System.out.println(xmlCounter);
+                        System.out.println(jarCounter);
                     }
-//                    System.out.println(totalCounter);
-
+                    int totalCounter =+ xmlCounter + jarCounter;
+                    fileWriter = new FileWriter(fileCount.getAbsoluteFile(), false);
+                    bufferedWriter = new BufferedWriter(fileWriter);
+                    bufferedWriter.write("xml: "+xmlCounter+" jar: "+jarCounter+" w sumie: "+totalCounter);
+                    bufferedWriter.close();
+                    fileWriter.close();
                 }
 
             }
             key.reset();
         }
-//            int totalCounter =+ xmlCounter + jarCounter;
-//            printWriter.println("ile plikow .xml " + xmlCounter);
-//            printWriter.println("ile plikow .jar " + jarCounter);
-//            printWriter.println("w sumie plikow " + totalCounter);
-//            printWriter.flush();
-//            printWriter.close();
     }
 }
