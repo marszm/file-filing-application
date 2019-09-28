@@ -110,19 +110,32 @@ public class FileFilingApplication {
             }
         }
 
-        int totalCounter = xmlCounter + jarCounter;
+//        System.out.println(totalCounter);
+        System.out.println(xmlCounter);
+        System.out.println(jarCounter);
+
+        PrintWriter printWriter = null;
+
+        try {
+            printWriter = new PrintWriter(count);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        printWriter.println("ile plikow .xml " + xmlCounter);
+        printWriter.println("ile plikow .jar " + jarCounter);
+        printWriter.close();
 
         while ((key = watchService.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
-                if(event.kind().toString() == "ENTRY_CREATE") {
+//                System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
+                if(event.kind().toString().equals("ENTRY_CREATE")) {
 
                     File[] homeWatchFilter = fileHome.listFiles((dir, name) -> name.endsWith(".jar") || name.endsWith(".xml"));
 
                     for (File path : homeWatchFilter) {
                         if (path.getName().endsWith(".jar")) {
-//                        jarCounter++;
-                                System.out.println(path.getName());
+                        jarCounter++;
                             try {
                                 attrs = Files.readAttributes(path.toPath(), BasicFileAttributes.class);
                             } catch (IOException e) {
@@ -138,7 +151,6 @@ public class FileFilingApplication {
                                 Path pathHome = Paths.get(home + File.separator + path.getName());
 
                                 try {
-//                                Files.move(pathHomeWatch, pathDevWatch, StandardCopyOption.REPLACE_EXISTING);
                                     Files.move(pathHome, pathDev, StandardCopyOption.REPLACE_EXISTING);
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -169,22 +181,18 @@ public class FileFilingApplication {
 
                         }
                     }
+//                    System.out.println(totalCounter);
+
                 }
+
             }
             key.reset();
         }
-
-        PrintWriter printWriter = null;
-
-        try {
-            printWriter = new PrintWriter(count);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        printWriter.println("ile plikow .xml " + xmlCounter);
-        printWriter.println("ile plikow .jar " + jarCounter);
-        printWriter.println("w sumie plikow " + totalCounter);
-        printWriter.close();
+//            int totalCounter =+ xmlCounter + jarCounter;
+//            printWriter.println("ile plikow .xml " + xmlCounter);
+//            printWriter.println("ile plikow .jar " + jarCounter);
+//            printWriter.println("w sumie plikow " + totalCounter);
+//            printWriter.flush();
+//            printWriter.close();
     }
 }
