@@ -53,16 +53,20 @@ public class FileFilingApplication {
 
         BufferedWriter bufferedWriter = null;
         FileWriter fileWriter = null;
+        fileWriter = new FileWriter(fileCount.getAbsoluteFile(), false);
+        bufferedWriter = new BufferedWriter(fileWriter);
 
         BasicFileAttributes attrs = null;
 
         int xmlCounter = 0;
         int jarCounter = 0;
+        int totalCounter = 0;
 
         File[] homeFilter = fileHome.listFiles((dir, name) -> name.endsWith(".jar") || name.endsWith(".xml"));
 
         for (File path1 : homeFilter) {
             if (path1.getName().endsWith(".jar")) {
+
                 jarCounter++;
 
                 try {
@@ -99,6 +103,7 @@ public class FileFilingApplication {
             } else {
 
                 xmlCounter++;
+
                 Path pathHome = Paths.get(home + File.separator + path1.getName());
                 Path pathDev = Paths.get(dev + File.separator + path1.getName());
 
@@ -109,6 +114,11 @@ public class FileFilingApplication {
                 }
             }
         }
+
+        totalCounter =+ xmlCounter + jarCounter;
+        bufferedWriter.write("xml: "+xmlCounter+" jar: "+jarCounter+" w sumie: "+totalCounter);
+        bufferedWriter.close();
+        fileWriter.close();
 
         while ((key = watchService.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
@@ -164,17 +174,14 @@ public class FileFilingApplication {
                             }
 
                         }
-                        System.out.println(xmlCounter);
-                        System.out.println(jarCounter);
                     }
-                    int totalCounter =+ xmlCounter + jarCounter;
+                    totalCounter =+ xmlCounter + jarCounter;
                     fileWriter = new FileWriter(fileCount.getAbsoluteFile(), false);
                     bufferedWriter = new BufferedWriter(fileWriter);
                     bufferedWriter.write("xml: "+xmlCounter+" jar: "+jarCounter+" w sumie: "+totalCounter);
                     bufferedWriter.close();
                     fileWriter.close();
                 }
-
             }
             key.reset();
         }
